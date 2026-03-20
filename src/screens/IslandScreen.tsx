@@ -1,43 +1,60 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import WonderBackground from '../components/WonderBackground';
 import WonderCard from '../components/WonderCard';
 import BigButton from '../components/BigButton';
 import CelebrationOverlay from '../components/CelebrationOverlay';
-import { COLORS, FONT, SPACING, RADIUS, TOUCH_MIN } from '../constants/theme';
+import { COLORS, FONT, SPACING } from '../constants/theme';
 import { ISLANDS } from '../constants/tools';
+import { wonderAI } from '../utils/api';
 
-// Mock questions per island
-const MOCK_QUESTIONS: Record<string, { question: string; options: string[]; correct: number; funFact: string }[]> = {
-  Numbers: [
-    { question: 'How many legs does a dog have?', options: ['2', '4', '6'], correct: 1, funFact: 'Dogs have 4 legs and they love to run!' },
-    { question: 'What comes after 3?', options: ['2', '5', '4'], correct: 2, funFact: '3, 4, 5! You can count anything!' },
-  ],
-  Letters: [
-    { question: 'What letter does "Apple" start with?', options: ['B', 'A', 'C'], correct: 1, funFact: 'A is the first letter of the alphabet!' },
-    { question: 'What letter does "Cat" start with?', options: ['C', 'D', 'B'], correct: 0, funFact: 'C is for Cat, Cookie, and Cloud!' },
-  ],
-  Colors: [
-    { question: 'What color is the sky?', options: ['Red', 'Green', 'Blue'], correct: 2, funFact: 'The sky looks blue because of how sunlight bounces!' },
-    { question: 'What color is a banana?', options: ['Yellow', 'Purple', 'Pink'], correct: 0, funFact: 'Bananas start green and turn yellow!' },
-  ],
-};
+interface Question {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  funFact: string;
+}
 
-type Phase = 'map' | 'lesson';
+type Phase = 'map' | 'loading' | 'lesson';
+
+const QUESTIONS_PER_ISLAND = 3;
 
 export default function IslandScreen({ navigation }: any) {
   const [phase, setPhase] = useState<Phase>('map');
   const [currentIsland, setCurrentIsland] = useState('');
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [qIndex, setQIndex] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [childAge, setChildAge] = useState(4);
 
-  const questions = MOCK_QUESTIONS[currentIsland] || MOCK_QUESTIONS.Numbers;
-  const currentQ = questions[qIndex];
+  useEffect(() => {
+    AsyncStorage.getItem('childAge').then((v) => { if (v) setChildAge(parseInt(v, 10)); });
+  }, []);
 
-  const selectIsland = (name: string, unlocked: boolean) => {
+  const fetchQuestions = async (topic: string) => {
+    const fetched: Question[] = [];
+    for (let i = 0; i < QUESTIONS_PER_ISLAND; i++) {
+      try {
+        const data = await wonderAI('island', { age: childAge, topic, optionCount: 3 });
+        fetched.push(data);
+      } catch {
+        // Use a simple fallback if AI fails
+        fetched.push({
+          question: `Can you think of something about ${topic}?`,
+          options: ['Yes!', 'Let me try!', 'Tell me more!'],
+          correctIndex: 0,
+          funFact: `${topic} is so much fun to learn about!`,
+        });
+      }
+    }
+    return fetched;
+  };
+
+  const selectIsland = async (name: string, unlocked: boolean) => {
     if (!unlocked) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       return;
@@ -45,16 +62,22 @@ export default function IslandScreen({ navigation }: any) {
     setCurrentIsland(name);
     setQIndex(0);
     setFeedback('');
+    setPhase('loading');
+    const qs = await fetchQuestions(name);
+    setQuestions(qs);
     setPhase('lesson');
   };
 
+  const currentQ = questions[qIndex];
+
   const selectAnswer = (index: number) => {
+    if (!currentQ) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    if (index === currentQ.correct) {
+    if (index === currentQ.correctIndex) {
       setShowCelebration(true);
       setFeedback('');
     } else {
-      setFeedback(`Great try! It's ${currentQ.options[currentQ.correct]}! 🌟`);
+      setFeedback(`Great try! It's ${currentQ.options[currentQ.correctIndex]}! 🌟`);
     }
   };
 
@@ -68,7 +91,20 @@ export default function IslandScreen({ navigation }: any) {
     }
   };
 
-  if (phase === 'lesson') {
+  if (phase === 'loading') {
+    return (
+      <WonderBackground>
+        <SafeAreaView style={styles.safe}>
+          <View style={styles.center}>
+            <ActivityIndicator size="large" color={COLORS.primary} />
+            <Text style={styles.loadingText}>Preparing your lessons... ✨</Text>
+          </View>
+        </SafeAreaView>
+      </WonderBackground>
+    );
+  }
+
+  if (phase === 'lesson' && currentQ) {
     return (
       <WonderBackground>
         <SafeAreaView style={styles.safe}>
@@ -112,7 +148,7 @@ export default function IslandScreen({ navigation }: any) {
           <Text style={styles.subtitle}>Pick an island to explore!</Text>
 
           <View style={styles.islandGrid}>
-            {ISLANDS.map((island, i) => (
+            {ISLANDS.map((island) => (
               <WonderCard
                 key={island.name}
                 color={island.unlocked ? island.color : '#D1D5DB'}
@@ -140,6 +176,8 @@ export default function IslandScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   container: { padding: SPACING.lg, paddingBottom: SPACING.xxl },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: SPACING.xl },
+  loadingText: { fontSize: FONT.lg, fontWeight: '700', color: COLORS.primary, marginTop: SPACING.lg },
   title: { fontSize: FONT.xl, fontWeight: '900', color: COLORS.text, textAlign: 'center' },
   subtitle: { fontSize: FONT.body, color: COLORS.textSecondary, textAlign: 'center', marginBottom: SPACING.xl },
   islandGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: SPACING.md },
@@ -150,7 +188,6 @@ const styles = StyleSheet.create({
   lockedText: { color: COLORS.textLight },
   lockIcon: { fontSize: 16, marginTop: SPACING.xs },
 
-  // Lesson
   lessonContainer: { flex: 1, padding: SPACING.lg, justifyContent: 'center' },
   islandTitle: { fontSize: FONT.lg, fontWeight: '800', color: COLORS.primary, textAlign: 'center' },
   progress: { fontSize: FONT.body, color: COLORS.textSecondary, textAlign: 'center', marginBottom: SPACING.xl },

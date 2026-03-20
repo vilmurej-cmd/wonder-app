@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Speech from 'expo-speech';
 import * as Haptics from 'expo-haptics';
 import WonderBackground from '../components/WonderBackground';
+import { wonderAI } from '../utils/api';
 import WonderCard from '../components/WonderCard';
 import BigButton from '../components/BigButton';
 import { COLORS, FONT, SPACING, RADIUS } from '../constants/theme';
@@ -20,34 +21,25 @@ const TOPICS = [
   { label: 'Magic', emoji: '✨' },
 ];
 
-const MOCK_STORY = `Once upon a time, in a land filled with sparkling stars and fluffy clouds, there lived a brave little adventurer named Luna.
-
-Luna loved dinosaurs more than anything in the whole wide world. Every night, Luna would look up at the stars and wish to meet a real dinosaur.
-
-One magical evening, a friendly baby dinosaur named Sprout appeared in Luna's backyard! Sprout had soft green scales and the biggest, sweetest smile.
-
-"Will you be my friend?" asked Sprout.
-
-"Yes!" cheered Luna. Together, they went on the most wonderful adventure through the Enchanted Forest, where flowers sang songs and butterflies showed them the way.
-
-At the end of the adventure, Sprout gave Luna a special star that glowed in the dark. "Whenever you look at this star, remember our adventure," Sprout said.
-
-Luna hugged Sprout goodnight, climbed into bed, and held the glowing star close. With a happy smile and wonderful memories, Luna drifted off to the most peaceful sleep, dreaming of tomorrow's adventures.
-
-The end. 🌟`;
-
 export default function StorySparkScreen({ navigation }: any) {
   const [phase, setPhase] = useState<Phase>('input');
   const [childName, setChildName] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
+  const [storyText, setStoryText] = useState('');
   const [isReading, setIsReading] = useState(false);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!childName.trim() || !selectedTopic) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setPhase('loading');
-    // Mock delay — will call AI in Phase 3
-    setTimeout(() => setPhase('story'), 2500);
+    try {
+      const data = await wonderAI('story', { name: childName.trim(), topic: selectedTopic });
+      setStoryText(data.story);
+      setPhase('story');
+    } catch {
+      Alert.alert('Oops!', 'Could not create the story. Try again!');
+      setPhase('input');
+    }
   };
 
   const handleReadToMe = () => {
@@ -57,7 +49,8 @@ export default function StorySparkScreen({ navigation }: any) {
       return;
     }
     setIsReading(true);
-    Speech.speak(MOCK_STORY.replace(/🌟/g, ''), {
+    const cleanText = storyText.replace(/[🌟✨💫⭐🎉🌈]/g, '');
+    Speech.speak(cleanText, {
       rate: 0.85,
       pitch: 1.1,
       onDone: () => setIsReading(false),
@@ -68,6 +61,7 @@ export default function StorySparkScreen({ navigation }: any) {
   const handleNewStory = () => {
     Speech.stop();
     setIsReading(false);
+    setStoryText('');
     setPhase('input');
     setSelectedTopic('');
   };
@@ -93,7 +87,7 @@ export default function StorySparkScreen({ navigation }: any) {
           <ScrollView contentContainerStyle={styles.storyContainer} showsVerticalScrollIndicator={false}>
             <Text style={styles.storyTitle}>A Story for {childName} ✨</Text>
             <WonderCard color={COLORS.storySpark} style={styles.storyCard}>
-              <Text style={styles.storyText}>{MOCK_STORY}</Text>
+              <Text style={styles.storyText}>{storyText}</Text>
             </WonderCard>
 
             <BigButton
