@@ -7,6 +7,7 @@ import WonderBackground from '../components/WonderBackground';
 import { wonderAI } from '../utils/api';
 import WonderCard from '../components/WonderCard';
 import BigButton from '../components/BigButton';
+import CelebrationOverlay from '../components/CelebrationOverlay';
 import { COLORS, FONT, SPACING, RADIUS } from '../constants/theme';
 
 type Phase = 'input' | 'loading' | 'story';
@@ -27,6 +28,7 @@ export default function StorySparkScreen({ navigation }: any) {
   const [selectedTopic, setSelectedTopic] = useState('');
   const [storyText, setStoryText] = useState('');
   const [isReading, setIsReading] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const handleGenerate = async () => {
     if (!childName.trim() || !selectedTopic) return;
@@ -35,6 +37,7 @@ export default function StorySparkScreen({ navigation }: any) {
     try {
       const data = await wonderAI('story', { name: childName.trim(), topic: selectedTopic });
       setStoryText(data.story);
+      setShowCelebration(true);
       setPhase('story');
     } catch {
       Alert.alert('Oops!', 'Could not create the story. Try again!');
@@ -101,6 +104,9 @@ export default function StorySparkScreen({ navigation }: any) {
               <Text style={styles.backText}>← Back Home</Text>
             </TouchableOpacity>
           </ScrollView>
+          {showCelebration && (
+            <CelebrationOverlay message="Story Time! 📖✨" onDone={() => setShowCelebration(false)} />
+          )}
         </SafeAreaView>
       </WonderBackground>
     );
