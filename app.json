@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "wonder-app",
+    "name": "WONDER",
     "slug": "wonder-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,19 +9,23 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#F3E8FF"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.vilmureventures.wonder",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#F3E8FF",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "package": "com.vilmureventures.wonder"
     },
     "web": {
       "favicon": "./assets/favicon.png"
