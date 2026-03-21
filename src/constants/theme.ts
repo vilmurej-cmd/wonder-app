@@ -28,6 +28,15 @@ export const COLORS = {
   feelings: '#EAB308',
   abc: '#06B6D4',
 
+  // Safety tool colors
+  safeCircle: '#F59E0B',
+  safeTell: '#7C3AED',
+  safeWords: '#06B6D4',
+  safeCheck: '#EC4899',
+  safeHero: '#EF4444',
+  safeBuddy: '#3B82F6',
+  safeShield: '#F59E0B',
+
   // Feedback (no reds for errors!)
   success: '#22C55E',
   star: '#F59E0B',

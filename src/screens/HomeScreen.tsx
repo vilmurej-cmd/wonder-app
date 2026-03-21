@@ -6,7 +6,7 @@ import WonderBackground from '../components/WonderBackground';
 import WonderCard from '../components/WonderCard';
 import ParentGate from '../components/ParentGate';
 import { COLORS, FONT, SPACING, RADIUS } from '../constants/theme';
-import { TOOLS } from '../constants/tools';
+import { TOOLS, SAFETY_TOOLS } from '../constants/tools';
 
 export default function HomeScreen({ navigation }: any) {
   const [childName, setChildName] = useState('');
@@ -47,6 +47,32 @@ export default function HomeScreen({ navigation }: any) {
             ))}
           </View>
 
+          <View style={styles.safetyHeader}>
+            <Text style={styles.safetyTitle}>Stay Safe 🛡️</Text>
+            <Text style={styles.safetySubtitle}>Learn to be safe and brave!</Text>
+          </View>
+
+          <View style={styles.grid}>
+            {SAFETY_TOOLS.map((tool) => (
+              <WonderCard
+                key={tool.key}
+                color={tool.color}
+                onPress={() => navigation.navigate(tool.screen)}
+                style={styles.toolCard}
+              >
+                <View style={styles.shieldBadge}>
+                  <Text style={styles.shieldBadgeText}>🛡️</Text>
+                </View>
+                <Text style={styles.toolEmoji}>{tool.emoji}</Text>
+                <Text style={styles.toolName}>{tool.name}</Text>
+                <Text style={styles.toolTagline}>{tool.tagline}</Text>
+                {(tool as any).locked && (
+                  <Text style={styles.lockBadge}>🔒</Text>
+                )}
+              </WonderCard>
+            ))}
+          </View>
+
           <Text style={styles.footer}>Made with ❤️ by Vilmure Ventures</Text>
         </ScrollView>
 
@@ -73,5 +99,11 @@ const styles = StyleSheet.create({
   toolEmoji: { fontSize: 44, marginBottom: SPACING.sm },
   toolName: { fontSize: FONT.body, fontWeight: '800', color: COLORS.text, textAlign: 'center' },
   toolTagline: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2, textAlign: 'center' },
+  safetyHeader: { alignItems: 'center', marginTop: SPACING.xl, marginBottom: SPACING.md },
+  safetyTitle: { fontSize: FONT.lg, fontWeight: '900', color: COLORS.text },
+  safetySubtitle: { fontSize: 14, color: COLORS.textSecondary, marginTop: 2 },
+  shieldBadge: { position: 'absolute', top: 8, right: 8 },
+  shieldBadgeText: { fontSize: 14 },
+  lockBadge: { fontSize: 12, marginTop: 4 },
   footer: { textAlign: 'center', color: COLORS.textLight, fontSize: 12, marginTop: SPACING.xl },
 });

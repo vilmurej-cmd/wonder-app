@@ -9,6 +9,15 @@ export const TOOLS = [
   { key: 'abc', name: 'ABC World', emoji: '🔤', tagline: 'Learn your letters', color: COLORS.abc, screen: 'ABCWorld' },
 ];
 
+export const SAFETY_TOOLS = [
+  { key: 'circle', name: 'My Circle', emoji: '💛', tagline: 'Trusted grown-ups', color: COLORS.safeCircle, screen: 'MyCircle' },
+  { key: 'tell', name: 'Tell Someone', emoji: '🗣️', tagline: 'Learn when to tell', color: COLORS.safeTell, screen: 'TellSomeone' },
+  { key: 'safewords', name: 'Safe Words', emoji: '🔑', tagline: 'Family code word', color: COLORS.safeWords, screen: 'SafeWords' },
+  { key: 'checkin', name: 'Feelings Check-In', emoji: '😊', tagline: 'How are you today?', color: COLORS.safeCheck, screen: 'FeelingsCheckIn' },
+  { key: 'hero', name: 'Emergency Hero', emoji: '🦸', tagline: 'Learn to call 911', color: COLORS.safeHero, screen: 'EmergencyHero' },
+  { key: 'buddy', name: 'Buddy System', emoji: '🛡️', tagline: 'Family connection', color: COLORS.safeBuddy, screen: 'BuddySystem', locked: true },
+];
+
 export const ISLANDS = [
   { name: 'Numbers', emoji: '🔢', color: COLORS.numbers, unlocked: true },
   { name: 'Letters', emoji: '🔤', color: COLORS.letters, unlocked: true },

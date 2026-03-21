@@ -8,6 +8,12 @@ import QuestScreen from '../screens/QuestScreen';
 import FeelingsScreen from '../screens/FeelingsScreen';
 import ABCWorldScreen from '../screens/ABCWorldScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import MyCircleScreen from '../screens/MyCircleScreen';
+import TellSomeoneScreen from '../screens/TellSomeoneScreen';
+import SafeWordsScreen from '../screens/SafeWordsScreen';
+import FeelingsCheckInScreen from '../screens/FeelingsCheckInScreen';
+import EmergencyHeroScreen from '../screens/EmergencyHeroScreen';
+import BuddySystemScreen from '../screens/BuddySystemScreen';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +35,12 @@ export default function AppNavigator() {
       <Stack.Screen name="Feelings" component={FeelingsScreen} />
       <Stack.Screen name="ABCWorld" component={ABCWorldScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="MyCircle" component={MyCircleScreen} />
+      <Stack.Screen name="TellSomeone" component={TellSomeoneScreen} />
+      <Stack.Screen name="SafeWords" component={SafeWordsScreen} />
+      <Stack.Screen name="FeelingsCheckIn" component={FeelingsCheckInScreen} />
+      <Stack.Screen name="EmergencyHero" component={EmergencyHeroScreen} />
+      <Stack.Screen name="BuddySystem" component={BuddySystemScreen} />
     </Stack.Navigator>
   );
 }
