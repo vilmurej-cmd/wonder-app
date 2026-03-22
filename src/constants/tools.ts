@@ -1,4 +1,5 @@
 import { COLORS } from './theme';
+import { FEELINGS_EXPANDED } from './feelings-expanded';
 
 export const TOOLS = [
   { key: 'island', name: 'WONDER Island', emoji: '🏝️', tagline: 'Explore & learn!', color: COLORS.primary, screen: 'Island' },
@@ -50,6 +51,7 @@ export const FEELINGS = [
   { name: 'Confused', emoji: '🦉', animal: 'Owl', color: COLORS.animals,
     message: "That's okay! Everyone gets confused sometimes.",
     activity: "Let's think about it together. 🤔\nTake your time — you'll figure it out!" },
+  ...FEELINGS_EXPANDED,
 ];
 
 export const RECIPES = [
