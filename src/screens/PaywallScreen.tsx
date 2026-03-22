@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Purchases from 'react-native-purchases';
+// RevenueCat removed
 import WonderBackground from '../components/WonderBackground';
 import BigButton from '../components/BigButton';
 import { COLORS, FONT, SPACING, RADIUS } from '../constants/theme';
