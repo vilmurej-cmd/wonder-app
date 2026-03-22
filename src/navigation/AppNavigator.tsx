@@ -14,6 +14,7 @@ import SafeWordsScreen from '../screens/SafeWordsScreen';
 import FeelingsCheckInScreen from '../screens/FeelingsCheckInScreen';
 import EmergencyHeroScreen from '../screens/EmergencyHeroScreen';
 import BuddySystemScreen from '../screens/BuddySystemScreen';
+import PaywallScreen from '../screens/PaywallScreen';
 
 const Stack = createStackNavigator();
 
@@ -41,6 +42,7 @@ export default function AppNavigator() {
       <Stack.Screen name="FeelingsCheckIn" component={FeelingsCheckInScreen} />
       <Stack.Screen name="EmergencyHero" component={EmergencyHeroScreen} />
       <Stack.Screen name="BuddySystem" component={BuddySystemScreen} />
+      <Stack.Screen name="Paywall" component={PaywallScreen} />
     </Stack.Navigator>
   );
 }
